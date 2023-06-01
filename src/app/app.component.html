@@ -1,21 +1,26 @@
 <p-toast></p-toast>
 <!-- Criado o Container Login para obter o formulário de acesso -->
-
+<app-navbar></app-navbar>
 <div *ngIf="!login" class="login-container">
-  <h1>Login</h1>
-  <form>
-    <div class="p-input-filled">
-      <label for="usuario">Usuário:</label><br>
-      <input type="text" [(ngModel)]="usuario.nome" name="usuario.nome" pInputText>
-    </div><br>
-    <div class="p-input-filled">
-      <label for="password">Senha:</label><br>
-      <input type="password" id="password" [(ngModel)]="usuario.senha" name="usuario.senha" pInputText>
-    </div><br>
-    <div class="button-container">
-      <button (click)="realizarLogin()" pButton pRipple label="Acessar" icon="pi" class="p-button p-mr-2"></button>
-    </div>
-  </form>
+  <div class="titulo">
+    <h1>AuroraTech</h1>
+  </div>
+  <div class="card">
+    <h2>Login</h2>
+    <form>
+      <div class="p-input-filled">
+        <label for="usuario">Usuário:</label><br>
+        <input type="text" [(ngModel)]="usuario.nome" name="usuario.nome" pInputText>
+      </div><br>
+      <div class="p-input-filled">
+        <label for="password">Senha:</label><br>
+        <input type="password" id="password" [(ngModel)]="usuario.senha" name="usuario.senha" pInputText>
+      </div><br>
+      <div class="button-container">
+        <button (click)="realizarLogin()" pButton pRipple label="Acessar" icon="pi" class="p-button p-mr-2"></button>
+      </div>
+    </form>
+  </div>
 </div>
 <div *ngIf="login" class="card">
   <p-toolbar styleClass="p-mb-4">

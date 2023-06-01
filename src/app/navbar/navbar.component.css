@@ -1,0 +1,42 @@
+.navbar {
+    background-image: url("../../assets/images/auroratech.png");
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: space-between;
+    height: 100px;
+    margin-bottom: 0.2rem;
+  }
+  
+  .navbar-brand {
+    font-weight: bold;
+  }
+  
+  .navbar-logo {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .nav-item {
+    margin-left: 10px;
+  }
+  
+  .nav-link {
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
