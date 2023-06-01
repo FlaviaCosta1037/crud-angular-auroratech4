@@ -24,4 +24,27 @@ export class PersonService {
       console.log(result.key);
     })
   }
+  
+  update(person: Person, key: string) {
+    this.db.list('persons').update(key, person)
+      .then((result: any) => {
+        console.log(result.key);
+      }).catch(err => console.log(err));
+  }
+
+  getAll() {
+    return this.db.list('persons')
+      .snapshotChanges()
+      .pipe(
+        map(changes => {
+          return changes.map(c => ({ key: c.payload.key, ...c.payload.val }));
+        })
+      )
+  }
+  delete(key: string) {
+    this.db.object(`persons/${key}`).remove()
+      .catch(err => console.log(err));
+  }
 }
+
+
