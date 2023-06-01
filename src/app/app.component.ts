@@ -107,6 +107,7 @@ export class AppComponent {
   hideDialog() {
     this.productDialog = false;
     this.submitted = false;
+    this.personDialog = false;
   }
 
   savePerson() {
