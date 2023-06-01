@@ -164,7 +164,9 @@ export class AppComponent {
           summary: 'Successful',
           detail: 'Usuário Criado',
           life: 3000,
+
         });
+        this.personService.savePerson(this.person);
       }
 
       this.persons = [...this.persons];
