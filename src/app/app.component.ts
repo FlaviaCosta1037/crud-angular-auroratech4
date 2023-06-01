@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { PersonService } from './personService';
 import { Person } from './person';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -32,20 +33,21 @@ export class AppComponent {
 
   submitted: boolean;
 
-  persons: Person[];
+  persons: Observable<any>;
   person: Person;
   personDialog: boolean;
-  selectedPersons: Person[];
+
 
   //variavel login para aparecer para o usuário a próxima tela após logar
-  login: boolean = false;
+  login: boolean = true;
   //objeto usuário
   usuario = {
-    nome:"",
-    senha:""
+    nome: "",
+    senha: ""
   }
   zipCode: string = '';
   address: any;
+  key: string = "";
 
 
 
@@ -55,14 +57,10 @@ export class AppComponent {
     private confirmationService: ConfirmationService,
     private personService: PersonService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.productService.getProducts().then((data) => (this.products = data));
-    this.personService.getPerson().then((data) => {
-      this.persons = data;
-      console.log('testeapp.component.ts'+JSON.stringify(this.persons)); // Verifica se os dados estão sendo recebidos corretamente
-    });
+    this.persons = this.personService.getAll();
   }
 
   openNew() {
@@ -72,20 +70,21 @@ export class AppComponent {
   }
 
   //criada função realizar login
-  realizarLogin(){
-    if (this.usuario.nome =="admin" && this.usuario.senha == "admin"){
+  realizarLogin() {
+    if (this.usuario.nome == "admin" && this.usuario.senha == "admin") {
       this.login = true;
-    } else if (this.usuario.nome =="" || this.usuario.senha ==""){
+    } else if (this.usuario.nome == "" || this.usuario.senha == "") {
       return alert('Os campos precisam ser preenchidos');
-    }else{
+    } else {
       return alert('Usuário ou senha inválidos, tente novamente!')
     }
   }
-  buscarCEP() {
-    if (this.zipCode.length === 8) {
-      this.http.get(`https://viacep.com.br/ws/${this.zipCode}/json/`)
+  buscarCEP(zipcode: string) {
+    if (zipcode.length === 8) {
+      this.http.get(`https://viacep.com.br/ws/${zipcode}/json/`)
         .subscribe((dadosCep: any) => {
           this.address = dadosCep;
+          console.log(this.address)
           this.person.street = this.address.logradouro;
           this.person.neighborhood = this.address.bairro;
           this.person.city = this.address.localidade;
@@ -94,50 +93,16 @@ export class AppComponent {
         });
     }
   }
-  deleteSelectedPerson() {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja deletar este usuário?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.persons = this.persons.filter(
-          (val) => !this.selectedPersons.includes(val)
-        );
-        this.selectedPersons = null;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Usuário Deletado',
-          life: 3000,
-        });
-      },
-    });
-  }
 
-
-  editPerson(person: Person) {
+  editPerson(person: Person, key: string) {
     this.person = { ...person };
+
+    this.key = key;
     this.person.born = new Date(this.person.born)
     this.personDialog = true;
+    console.log(this.person)
   }
 
-  deletePerson(person: Person) {
-    this.confirmationService.confirm({
-      message: 'Tem certeza que deseja deletar? ' + person.name + '?',
-      header: 'Confirm',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.persons = this.persons.filter((val) => val.id !== person.id);
-        this.person = {};
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Usuário Deletado',
-          life: 3000,
-        });
-      },
-    });
-  }
 
   hideDialog() {
     this.productDialog = false;
@@ -148,52 +113,23 @@ export class AppComponent {
     this.submitted = true;
 
     if (this.person.name.trim()) {
-      if (this.person.id) {
-        this.persons[this.findIndexById(this.person.id)] = this.person;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Usuário atualizado',
-          life: 3000,
-        });
+      if (this.key) {
+        this.personService.update(this.person, this.key)
+        console.log(`updated ${this.person.name}`)
       } else {
-        this.person.id = this.createId();
-        this.persons.push(this.person);
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Successful',
-          detail: 'Usuário Criado',
-          life: 3000,
-
-        });
         this.personService.savePerson(this.person);
+        console.log(`saved ${this.person.name} `);
       }
-
-      this.persons = [...this.persons];
-      this.personDialog = false;
       this.person = {};
+      this.key = "";
+      this.personDialog = false;
+      this.submitted = false;
     }
   }
 
-  findIndexById(id: string): number {
-    let index = -1;
-    for (let i = 0; i < this.persons.length; i++) {
-      if (this.persons[i].id === id) {
-        index = i;
-        break;
-      }
-    }
-
-    return index;
+  deletePerson(key: string) {
+    this.personService.delete(key);
   }
 
-  createId(): string {
-    let id = '';
-    var chars =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < 5; i++) {
-      id += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return id;
-  }
+
 }

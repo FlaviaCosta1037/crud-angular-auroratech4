@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PersonService {
-  constructor(private http: HttpClient, private db: AngularFireDatabase) {}
+  constructor(private http: HttpClient, private db: AngularFireDatabase) { }
 
   getPerson() {
     return this.http
@@ -19,27 +19,26 @@ export class PersonService {
       });
   }
 
-  savePerson(person:Person){
-    this.db.list("persons").push(person).then((result: any) =>{
+  savePerson(person: Person) {
+    this.db.list("persons").push(person).then((result: any) => {
       console.log(result.key);
     })
   }
-  
+
   update(person: Person, key: string) {
     this.db.list('persons').update(key, person)
       .then((result: any) => {
-        console.log(result.key);
+        console.log("updated")
       }).catch(err => console.log(err));
   }
 
   getAll() {
-    return this.db.list('persons')
-      .snapshotChanges()
-      .pipe(
-        map(changes => {
-          return changes.map(c => ({ key: c.payload.key, ...c.payload.val }));
-        })
-      )
+    return this.db.list('persons').snapshotChanges().pipe(
+      map(changes => {
+        return changes.map(c => ({ key: c.payload.key, ...c.payload.val() as {} }))
+      })
+    )
+
   }
   delete(key: string) {
     this.db.object(`persons/${key}`).remove()
