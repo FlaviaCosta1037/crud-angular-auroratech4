@@ -39,7 +39,7 @@ export class AppComponent {
 
 
   //variavel login para aparecer para o usuário a próxima tela após logar
-  login: boolean = true;
+  login: boolean = false;
   //objeto usuário
   usuario = {
     nome: "",
